@@ -1,5 +1,4 @@
-const API_URL = "https://script.google.com/a/macros/datawifi.co/s/AKfycbyn4xsAlO31plm7zepMDwL_oifT03WFs4vd_nZxNTAiwk150-gvLUOUKMVQKJxyzlZF/exec";
-
+const API_URL = "https://script.google.com/macros/s/AKfycbyn4xsAlO31plm7zepMDwL_oifT03WFs4vd_nZxNTAiwk150-gvLUOUKMVQKJxyzlZF/exec";
 const $ = (selector) => document.querySelector(selector);
 
 let jsonpCounter = 0;
