@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Demos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">PREVENTA</p>
+        <h1>Gestión de Demos</h1>
+        <p class="subtitle">Registro y seguimiento de proyectos comerciales.</p>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Secciones">
+      <button class="tab active" data-tab="registro">Registro</button>
+      <button class="tab" data-tab="actualizacion">Actualización</button>
+    </nav>
+
+    <section id="registro" class="tab-panel active">
+      <div class="card">
+        <div class="card-title">
+          <h2>Registrar proyecto</h2>
+          <span class="required-note">* Campos obligatorios</span>
+        </div>
+
+        <form id="registroForm">
+          <div class="grid">
+            <label>
+              <span>Nombre del canal *</span>
+              <input id="canal" name="canal" type="text" placeholder="Ej. Ikusi" required>
+            </label>
+
+            <label>
+              <span>Nombre del proyecto *</span>
+              <input id="proyecto" name="proyecto" type="text" placeholder="Ej. BBVA Colombia" required>
+            </label>
+
+            <label>
+              <span>Cantidad de licencias *</span>
+              <input id="licencias" name="licencias" type="number" min="1" placeholder="Ej. 250" required>
+            </label>
+
+            <label>
+              <span>Comercial *</span>
+              <select id="comercial" name="comercial" required>
+                <option value="">Cargando...</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Ingeniero de preventa *</span>
+              <select id="preventa" name="preventa" required>
+                <option value="">Cargando...</option>
+              </select>
+            </label>
+
+            <label class="full">
+              <span>Observaciones</span>
+              <textarea id="observaciones" name="observaciones" rows="4" placeholder="Información inicial del proyecto..."></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">Registrar proyecto</button>
+          </div>
+          <div id="registroMessage" class="message" role="status"></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="actualizacion" class="tab-panel">
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <h2>Actualizar proyecto</h2>
+            <p class="muted">Busca por ID, canal, proyecto, comercial o preventa.</p>
+          </div>
+        </div>
+
+        <form id="buscarForm" class="search-row">
+          <input id="busqueda" type="search" placeholder="Ej. DEMO-0001, BBVA, Ikusi..." autocomplete="off">
+          <button class="secondary" type="submit">Buscar</button>
+        </form>
+
+        <div id="resultados" class="results"></div>
+        <div id="actualizacionMessage" class="message" role="status"></div>
+      </div>
+
+      <div id="editor" class="card hidden">
+        <div class="card-title">
+          <div>
+            <p class="eyebrow">PROYECTO SELECCIONADO</p>
+            <h2 id="editorTitle">—</h2>
+          </div>
+          <span id="editorId" class="badge">—</span>
+        </div>
+
+        <div id="projectSummary" class="summary"></div>
+
+        <form id="actualizarForm">
+          <input id="editId" type="hidden">
+
+          <div class="grid">
+            <label>
+              <span>Nuevo estado *</span>
+              <select id="editEstado" required></select>
+            </label>
+
+            <label class="full">
+              <span>Comentario de seguimiento</span>
+              <textarea id="editComentario" rows="5" placeholder="Escribe aquí la actualización del proyecto..."></textarea>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">Guardar actualización</button>
+          </div>
+        </form>
+
+        <div class="history-note">
+          Cada actualización se registra en la pestaña <strong>HISTORIAL</strong>.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
