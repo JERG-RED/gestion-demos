@@ -1,4 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwxH2GAljE5_QGbSQHblOYP7PYQtcLdDHun4aXL0hks4TOXnmLgGzBlgvGQBbsXI6Pa/exec";
+
 const $ = (selector) => document.querySelector(selector);
 
 let jsonpCounter = 0;
@@ -9,6 +10,7 @@ let jsonpCounter = 0;
    ========================================================= */
 
 document.querySelectorAll(".tab").forEach((button) => {
+
   button.addEventListener("click", () => {
 
     document
@@ -21,8 +23,14 @@ document.querySelectorAll(".tab").forEach((button) => {
 
     button.classList.add("active");
 
-    $("#" + button.dataset.tab).classList.add("active");
+    const panel = $("#" + button.dataset.tab);
+
+    if (panel) {
+      panel.classList.add("active");
+    }
+
   });
+
 });
 
 
@@ -36,6 +44,7 @@ function setMessage(element, text, type = "") {
 
   element.textContent = text;
   element.className = "message " + type;
+
 }
 
 
@@ -49,26 +58,32 @@ function fillSelect(select, items, placeholder) {
 
   select.innerHTML = "";
 
-  const defaultOption = document.createElement("option");
+  const defaultOption =
+    document.createElement("option");
+
   defaultOption.value = "";
   defaultOption.textContent = placeholder;
 
   select.appendChild(defaultOption);
 
+
   items.forEach((item) => {
 
-    const option = document.createElement("option");
+    const option =
+      document.createElement("option");
 
     option.value = item;
     option.textContent = item;
 
     select.appendChild(option);
+
   });
+
 }
 
 
 /* =========================================================
-   API GET - JSONP
+   API GET / JSONP
    ========================================================= */
 
 function apiGet(params) {
@@ -78,28 +93,39 @@ function apiGet(params) {
     const callbackName =
       `gestionDemosCallback_${Date.now()}_${jsonpCounter++}`;
 
-    const script = document.createElement("script");
+    const script =
+      document.createElement("script");
 
-    const query = new URLSearchParams({
-      ...params,
-      callback: callbackName
-    });
+
+    const query =
+      new URLSearchParams({
+
+        ...params,
+
+        callback: callbackName
+
+      });
+
 
     let finished = false;
 
-    const timeout = setTimeout(() => {
 
-      if (finished) return;
+    const timeout =
+      setTimeout(() => {
 
-      finished = true;
+        if (finished) return;
 
-      cleanup();
+        finished = true;
 
-      reject(
-        new Error("Tiempo de espera agotado al consultar la API.")
-      );
+        cleanup();
 
-    }, 15000);
+        reject(
+          new Error(
+            "Tiempo de espera agotado al consultar la API."
+          )
+        );
+
+      }, 30000);
 
 
     function cleanup() {
@@ -111,154 +137,50 @@ function apiGet(params) {
       if (script.parentNode) {
         script.parentNode.removeChild(script);
       }
+
     }
 
 
-    window[callbackName] = function (data) {
+    window[callbackName] =
+      function(data) {
 
-      if (finished) return;
+        if (finished) return;
 
-      finished = true;
+        finished = true;
 
-      cleanup();
+        cleanup();
 
-      resolve(data);
-    };
+        resolve(data);
+
+      };
 
 
-    script.onerror = function () {
+    script.onerror =
+      function() {
 
-      if (finished) return;
+        if (finished) return;
 
-      finished = true;
+        finished = true;
 
-      cleanup();
+        cleanup();
 
-      reject(
-        new Error("No fue posible conectar con la API.")
-      );
-    };
+        reject(
+          new Error(
+            "No fue posible conectar con la API."
+          )
+        );
+
+      };
 
 
     script.src =
       `${API_URL}?${query.toString()}`;
 
+
     document.body.appendChild(script);
+
   });
-}
 
-
-/* =========================================================
-   API POST
-   ========================================================= */
-
-function apiPost(data) {
-
-  return new Promise((resolve, reject) => {
-
-    const iframeName =
-      `gestionDemosFrame_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-
-    const iframe = document.createElement("iframe");
-
-    iframe.name = iframeName;
-    iframe.style.display = "none";
-
-    document.body.appendChild(iframe);
-
-
-    const form = document.createElement("form");
-
-    form.method = "POST";
-    form.action = API_URL;
-    form.target = iframeName;
-    form.style.display = "none";
-
-
-    Object.keys(data).forEach((key) => {
-
-      const input = document.createElement("input");
-
-      input.type = "hidden";
-      input.name = key;
-      input.value = data[key] ?? "";
-
-      form.appendChild(input);
-    });
-
-
-    document.body.appendChild(form);
-
-
-    let finished = false;
-
-
-    const timeout = setTimeout(() => {
-
-      if (finished) return;
-
-      finished = true;
-
-      cleanup();
-
-      reject(
-        new Error("Tiempo de espera agotado al guardar.")
-      );
-
-    }, 20000);
-
-
-    function cleanup() {
-
-      clearTimeout(timeout);
-
-      window.removeEventListener("message", messageHandler);
-
-      if (form.parentNode) {
-        form.parentNode.removeChild(form);
-      }
-
-      if (iframe.parentNode) {
-        iframe.parentNode.removeChild(iframe);
-      }
-    }
-
-
-    function messageHandler(event) {
-
-      if (finished) return;
-
-      if (event.source !== iframe.contentWindow) {
-        return;
-      }
-
-      const dataReceived = event.data;
-
-
-      if (
-        !dataReceived ||
-        dataReceived.source !== "gestion-demos-api"
-      ) {
-        return;
-      }
-
-
-      finished = true;
-
-      cleanup();
-
-      resolve(dataReceived);
-    }
-
-
-    window.addEventListener(
-      "message",
-      messageHandler
-    );
-
-
-    form.submit();
-  });
 }
 
 
@@ -272,9 +194,13 @@ async function loadCatalogs() {
 
     console.log("Cargando catálogos...");
 
-    const data = await apiGet({
-      action: "catalogos"
-    });
+
+    const data =
+      await apiGet({
+
+        action: "catalogos"
+
+      });
 
 
     console.log(
@@ -283,12 +209,16 @@ async function loadCatalogs() {
     );
 
 
-    if (data.status !== "success") {
+    if (
+      !data ||
+      data.status !== "success"
+    ) {
 
       throw new Error(
-        data.message ||
+        data?.message ||
         "No se pudieron cargar los catálogos."
       );
+
     }
 
 
@@ -313,7 +243,9 @@ async function loadCatalogs() {
     );
 
 
-    console.log("Catálogos cargados correctamente.");
+    console.log(
+      "Catálogos cargados correctamente."
+    );
 
   } catch (error) {
 
@@ -349,7 +281,9 @@ async function loadCatalogs() {
       "No fue posible cargar los catálogos.",
       "error"
     );
+
   }
+
 }
 
 
@@ -364,11 +298,14 @@ $("#registroForm").addEventListener(
     event.preventDefault();
 
 
-    const button = event.submitter;
+    const button =
+      event.submitter;
+
 
     button.disabled = true;
 
-    button.textContent = "Registrando...";
+    button.textContent =
+      "Registrando...";
 
 
     const payload = {
@@ -392,28 +329,44 @@ $("#registroForm").addEventListener(
 
       observaciones:
         $("#observaciones").value.trim()
+
     };
+
+
+    console.log(
+      "Registrando proyecto:",
+      payload
+    );
 
 
     try {
 
-      const data = await apiPost(payload);
+      const data =
+        await apiGet(payload);
 
 
       console.log(
-        "Respuesta registro:",
+        "Respuesta del registro:",
         data
       );
 
 
-      if (data.status !== "success") {
+      if (
+        !data ||
+        data.status !== "success"
+      ) {
 
         throw new Error(
-          data.message ||
+          data?.message ||
           "No se pudo registrar el proyecto."
         );
+
       }
 
+
+      /* ==========================================
+         REGISTRO EXITOSO
+         ========================================== */
 
       setMessage(
         $("#registroMessage"),
@@ -422,11 +375,15 @@ $("#registroForm").addEventListener(
       );
 
 
+      /*
+       * Limpiar formulario
+       */
+
       $("#registroForm").reset();
 
 
       /*
-       * Volvemos a cargar catálogos por seguridad.
+       * Volver a cargar los catálogos
        */
 
       await loadCatalogs();
@@ -442,7 +399,7 @@ $("#registroForm").addEventListener(
 
       setMessage(
         $("#registroMessage"),
-        "No se pudo registrar el proyecto. Revisa la conexión con la API.",
+        "No se pudo registrar el proyecto. Verifica la conexión con la API.",
         "error"
       );
 
@@ -453,7 +410,9 @@ $("#registroForm").addEventListener(
 
       button.textContent =
         "Registrar proyecto";
+
     }
+
   }
 );
 
@@ -482,6 +441,7 @@ $("#buscarForm").addEventListener(
       );
 
       return;
+
     }
 
 
@@ -494,17 +454,21 @@ $("#buscarForm").addEventListener(
 
     $("#resultados").innerHTML = "";
 
-    $("#editor").classList.add("hidden");
+    $("#editor")
+      .classList
+      .add("hidden");
 
 
     try {
 
-      const data = await apiGet({
+      const data =
+        await apiGet({
 
-        action: "buscar",
+          action: "buscar",
 
-        q: query
-      });
+          q: query
+
+        });
 
 
       console.log(
@@ -513,16 +477,23 @@ $("#buscarForm").addEventListener(
       );
 
 
-      if (data.status !== "success") {
+      if (
+        !data ||
+        data.status !== "success"
+      ) {
 
         throw new Error(
-          data.message ||
+          data?.message ||
           "No se pudo realizar la búsqueda."
         );
+
       }
 
 
-      if (!data.demos || !data.demos.length) {
+      if (
+        !data.demos ||
+        !data.demos.length
+      ) {
 
         setMessage(
           $("#actualizacionMessage"),
@@ -531,6 +502,7 @@ $("#buscarForm").addEventListener(
         );
 
         return;
+
       }
 
 
@@ -546,7 +518,9 @@ $("#buscarForm").addEventListener(
         const item =
           document.createElement("div");
 
-        item.className = "result";
+
+        item.className =
+          "result";
 
 
         item.innerHTML = `
@@ -557,15 +531,14 @@ $("#buscarForm").addEventListener(
 
               <h3>
                 ${escapeHtml(
-                  demo.Proyecto ||
                   demo.proyecto ||
                   "Sin proyecto"
                 )}
               </h3>
 
               <p>
+
                 ${escapeHtml(
-                  demo.ID ||
                   demo.id ||
                   ""
                 )}
@@ -573,7 +546,6 @@ $("#buscarForm").addEventListener(
                 ·
 
                 ${escapeHtml(
-                  demo.Canal ||
                   demo.canal ||
                   "Sin canal"
                 )}
@@ -581,18 +553,18 @@ $("#buscarForm").addEventListener(
                 ·
 
                 ${escapeHtml(
-                  demo.Preventa ||
                   demo.preventa ||
                   "Sin preventa"
                 )}
+
               </p>
 
             </div>
 
+
             <span class="badge">
 
               ${escapeHtml(
-                demo.Estado ||
                 demo.estado ||
                 "Sin estado"
               )}
@@ -600,6 +572,7 @@ $("#buscarForm").addEventListener(
             </span>
 
           </div>
+
         `;
 
 
@@ -611,6 +584,7 @@ $("#buscarForm").addEventListener(
 
         $("#resultados")
           .appendChild(item);
+
       });
 
 
@@ -624,10 +598,12 @@ $("#buscarForm").addEventListener(
 
       setMessage(
         $("#actualizacionMessage"),
-        "No fue posible realizar la búsqueda. Revisa la conexión con la API.",
+        "No fue posible realizar la búsqueda. Verifica la conexión con la API.",
         "error"
       );
+
     }
+
   }
 );
 
@@ -639,45 +615,31 @@ $("#buscarForm").addEventListener(
 function openEditor(demo) {
 
   const id =
-    demo.ID ||
-    demo.id ||
-    "";
+    demo.id || "";
 
 
   const proyecto =
-    demo.Proyecto ||
-    demo.proyecto ||
-    "";
+    demo.proyecto || "";
 
 
   const estado =
-    demo.Estado ||
-    demo.estado ||
-    "";
+    demo.estado || "";
 
 
   const canal =
-    demo.Canal ||
-    demo.canal ||
-    "";
+    demo.canal || "";
 
 
   const licencias =
-    demo.Licencias ||
-    demo.licencias ||
-    "";
+    demo.licencias || "";
 
 
   const comercial =
-    demo.Comercial ||
-    demo.comercial ||
-    "";
+    demo.comercial || "";
 
 
   const preventa =
-    demo.Preventa ||
-    demo.preventa ||
-    "";
+    demo.preventa || "";
 
 
   $("#editor")
@@ -715,7 +677,8 @@ function openEditor(demo) {
 
     ["Preventa", preventa]
 
-  ].map(([label, value]) => `
+  ]
+  .map(([label, value]) => `
 
     <div class="summary-item">
 
@@ -724,6 +687,7 @@ function openEditor(demo) {
         ${escapeHtml(label)}
 
       </span>
+
 
       <span class="summary-value">
 
@@ -735,7 +699,8 @@ function openEditor(demo) {
 
     </div>
 
-  `).join("");
+  `)
+  .join("");
 
 
   $("#editComentario")
@@ -744,9 +709,13 @@ function openEditor(demo) {
 
   $("#editor")
     .scrollIntoView({
+
       behavior: "smooth",
+
       block: "start"
+
     });
+
 }
 
 
@@ -785,13 +754,20 @@ $("#actualizarForm").addEventListener(
         $("#editComentario")
           .value
           .trim()
+
     };
+
+
+    console.log(
+      "Actualizando proyecto:",
+      payload
+    );
 
 
     try {
 
       const data =
-        await apiPost(payload);
+        await apiGet(payload);
 
 
       console.log(
@@ -800,12 +776,16 @@ $("#actualizarForm").addEventListener(
       );
 
 
-      if (data.status !== "success") {
+      if (
+        !data ||
+        data.status !== "success"
+      ) {
 
         throw new Error(
-          data.message ||
+          data?.message ||
           "No se pudo actualizar."
         );
+
       }
 
 
@@ -820,6 +800,40 @@ $("#actualizarForm").addEventListener(
         .value = "";
 
 
+      /*
+       * Actualizar visualmente el badge
+       */
+
+      const selectedDemo =
+        data.id;
+
+
+      document
+        .querySelectorAll(".result")
+        .forEach((item) => {
+
+          const text =
+            item.textContent || "";
+
+          if (
+            text.includes(selectedDemo)
+          ) {
+
+            const badge =
+              item.querySelector(".badge");
+
+            if (badge) {
+
+              badge.textContent =
+                $("#editEstado").value;
+
+            }
+
+          }
+
+        });
+
+
     } catch (error) {
 
       console.error(
@@ -830,7 +844,7 @@ $("#actualizarForm").addEventListener(
 
       setMessage(
         $("#actualizacionMessage"),
-        "No se pudo guardar la actualización. Revisa la conexión con la API.",
+        "No se pudo guardar la actualización. Verifica la conexión con la API.",
         "error"
       );
 
@@ -841,13 +855,15 @@ $("#actualizarForm").addEventListener(
 
       button.textContent =
         "Guardar actualización";
+
     }
+
   }
 );
 
 
 /* =========================================================
-   SEGURIDAD HTML
+   ESCAPAR HTML
    ========================================================= */
 
 function escapeHtml(value) {
@@ -878,6 +894,7 @@ function escapeHtml(value) {
       "'",
       "&#039;"
     );
+
 }
 
 
