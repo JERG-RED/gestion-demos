@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyn4xsAlO31plm7zepMDwL_oifT03WFs4vd_nZxNTAiwk150-gvLUOUKMVQKJxyzlZF/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwxH2GAljE5_QGbSQHblOYP7PYQtcLdDHun4aXL0hks4TOXnmLgGzBlgvGQBbsXI6Pa/exec";
 const $ = (selector) => document.querySelector(selector);
 
 let jsonpCounter = 0;
