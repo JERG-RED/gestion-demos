@@ -59,6 +59,16 @@
               </select>
             </label>
 
+            <label>
+              <span>Vendor</span>
+              <input id="vendor" name="vendor" type="text" placeholder="Ej. Cisco">
+            </label>
+
+            <label>
+              <span>Fin de demo</span>
+              <input id="finDemo" name="finDemo" type="date">
+            </label>
+
             <label class="full">
               <span>Observaciones</span>
               <textarea id="observaciones" name="observaciones" rows="4" placeholder="Información inicial del proyecto..."></textarea>
@@ -100,12 +110,45 @@
           <span id="editorId" class="badge">—</span>
         </div>
 
-        <div id="projectSummary" class="summary"></div>
-
         <form id="actualizarForm">
           <input id="editId" type="hidden">
 
           <div class="grid">
+            <label>
+              <span>Canal</span>
+              <input id="editCanal" type="text">
+            </label>
+
+            <label>
+              <span>Proyecto</span>
+              <input id="editProyecto" type="text">
+            </label>
+
+            <label>
+              <span>Cantidad de licencias</span>
+              <input id="editLicencias" type="number" min="1">
+            </label>
+
+            <label>
+              <span>Comercial</span>
+              <select id="editComercial"></select>
+            </label>
+
+            <label>
+              <span>Ingeniero de preventa</span>
+              <select id="editPreventa"></select>
+            </label>
+
+            <label>
+              <span>Vendor</span>
+              <input id="editVendor" type="text">
+            </label>
+
+            <label>
+              <span>Fin de demo</span>
+              <input id="editFinDemo" type="date">
+            </label>
+
             <label>
               <span>Nuevo estado *</span>
               <select id="editEstado" required></select>
