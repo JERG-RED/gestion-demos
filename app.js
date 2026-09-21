@@ -39,11 +39,15 @@ async function loadCatalogs() {
     fillSelect($("#comercial"), data.comerciales || [], "Seleccionar comercial");
     fillSelect($("#preventa"), data.preventa || [], "Seleccionar preventa");
     fillSelect($("#editEstado"), data.estados || [], "Seleccionar estado");
+    fillSelect($("#editComercial"), data.comerciales || [], "Seleccionar comercial");
+    fillSelect($("#editPreventa"), data.preventa || [], "Seleccionar preventa");
   } catch (error) {
     console.error(error);
     fillSelect($("#comercial"), [], "Error al cargar");
     fillSelect($("#preventa"), [], "Error al cargar");
     fillSelect($("#editEstado"), [], "Error al cargar");
+    fillSelect($("#editComercial"), [], "Error al cargar");
+    fillSelect($("#editPreventa"), [], "Error al cargar");
     setMessage($("#registroMessage"), "No fue posible cargar los catálogos. Revisa el acceso de la API.", "error");
   }
 }
@@ -62,6 +66,8 @@ $("#registroForm").addEventListener("submit", async (event) => {
     licencias: $("#licencias").value,
     comercial: $("#comercial").value,
     preventa: $("#preventa").value,
+    vendor: $("#vendor").value.trim(),
+    finDemo: $("#finDemo").value,
     observaciones: $("#observaciones").value.trim()
   };
 
@@ -138,24 +144,27 @@ $("#buscarForm").addEventListener("submit", async (event) => {
   }
 });
 
+function toDateInputValue(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+}
+
 function openEditor(demo) {
   $("#editor").classList.remove("hidden");
   $("#editorTitle").textContent = demo.proyecto || "Proyecto";
   $("#editorId").textContent = demo.id;
   $("#editId").value = demo.id;
-  $("#editEstado").value = demo.estado || "";
 
-  $("#projectSummary").innerHTML = [
-    ["Canal", demo.canal],
-    ["Licencias", demo.licencias],
-    ["Comercial", demo.comercial],
-    ["Preventa", demo.preventa]
-  ].map(([label, value]) => `
-    <div class="summary-item">
-      <span class="summary-label">${escapeHtml(label)}</span>
-      <span class="summary-value">${escapeHtml(value ?? "—")}</span>
-    </div>
-  `).join("");
+  $("#editCanal").value = demo.canal || "";
+  $("#editProyecto").value = demo.proyecto || "";
+  $("#editLicencias").value = demo.licencias || "";
+  $("#editComercial").value = demo.comercial || "";
+  $("#editPreventa").value = demo.preventa || "";
+  $("#editVendor").value = demo.vendor || "";
+  $("#editFinDemo").value = toDateInputValue(demo.finDemo);
+  $("#editEstado").value = demo.estado || "";
 
   $("#editComentario").value = "";
   $("#editor").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -171,6 +180,13 @@ $("#actualizarForm").addEventListener("submit", async (event) => {
   const payload = {
     action: "actualizar",
     id: $("#editId").value,
+    canal: $("#editCanal").value.trim(),
+    proyecto: $("#editProyecto").value.trim(),
+    licencias: $("#editLicencias").value,
+    comercial: $("#editComercial").value,
+    preventa: $("#editPreventa").value,
+    vendor: $("#editVendor").value.trim(),
+    finDemo: $("#editFinDemo").value,
     estado: $("#editEstado").value,
     comentario: $("#editComentario").value.trim()
   };
@@ -209,3 +225,4 @@ function escapeHtml(value) {
 }
 
 loadCatalogs();
+
