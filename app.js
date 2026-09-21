@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzvoLlk1LSRVL24ClUJBfhpEmlMKajrVFJhFmM_9nYfmw5PA3P0PhHDZikusscyNNsO/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyhr8-d0zXbnHbqJ9JQEEloc9pQHeb5AR-v05PhVeDZuQb1F__Tk_6attG14HZ5mIDp/exec";
 
 const VENDORS = [
   "4ipnet",
