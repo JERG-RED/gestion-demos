@@ -1,5 +1,44 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbzvoLlk1LSRVL24ClUJBfhpEmlMKajrVFJhFmM_9nYfmw5PA3P0PhHDZikusscyNNsO/exec";
 
+const VENDORS = [
+  "4ipnet",
+  "Aerohive",
+  "Alcatel-Lucent Enterprise",
+  "Allied Telesis",
+  "Altai",
+  "Aruba",
+  "Cambium",
+  "Casa Systems",
+  "Cisco",
+  "DD-WRT",
+  "E-LINS",
+  "EnGenius",
+  "Extreme Networks",
+  "Fortinet",
+  "Galgus",
+  "Grandstream",
+  "H3C",
+  "Huawei",
+  "IgniteNet",
+  "Juniper",
+  "LigoWave",
+  "Linksys",
+  "MikroTik",
+  "Mojo Networks",
+  "NetModule",
+  "Peplink / PepWave",
+  "pfSense",
+  "Robustel",
+  "Ruckus",
+  "Ruijie",
+  "Tanaza",
+  "Teldat",
+  "Teltonika",
+  "TP-Link",
+  "Ubiquiti / UniFi",
+  "ZBT"
+];
+
 const $ = (selector) => document.querySelector(selector);
 
 document.querySelectorAll(".tab").forEach((button) => {
@@ -66,8 +105,9 @@ $("#registroForm").addEventListener("submit", async (event) => {
     licencias: $("#licencias").value,
     comercial: $("#comercial").value,
     preventa: $("#preventa").value,
-    vendor: $("#vendor").value.trim(),
+    vendor: $("#vendor").value,
     finDemo: $("#finDemo").value,
+    fechaInicio: $("#fechaInicio").value,
     observaciones: $("#observaciones").value.trim()
   };
 
@@ -164,6 +204,7 @@ function openEditor(demo) {
   $("#editPreventa").value = demo.preventa || "";
   $("#editVendor").value = demo.vendor || "";
   $("#editFinDemo").value = toDateInputValue(demo.finDemo);
+  $("#editFechaInicio").value = toDateInputValue(demo.fechaInicio);
   $("#editEstado").value = demo.estado || "";
 
   $("#editComentario").value = "";
@@ -185,8 +226,9 @@ $("#actualizarForm").addEventListener("submit", async (event) => {
     licencias: $("#editLicencias").value,
     comercial: $("#editComercial").value,
     preventa: $("#editPreventa").value,
-    vendor: $("#editVendor").value.trim(),
+    vendor: $("#editVendor").value,
     finDemo: $("#editFinDemo").value,
+    fechaInicio: $("#editFechaInicio").value,
     estado: $("#editEstado").value,
     comentario: $("#editComentario").value.trim()
   };
@@ -224,5 +266,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+fillSelect($("#vendor"), VENDORS, "Seleccionar vendor");
+fillSelect($("#editVendor"), VENDORS, "Seleccionar vendor");
 loadCatalogs();
-
